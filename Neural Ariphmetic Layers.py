@@ -9,7 +9,6 @@ class NAC(Layer):
         super(NAC, self).__init__(**kwargs)
 
     def build(self, input_shape):
-        # Create a trainable weight variable for this layer.
         self._M_hat = self.add_weight(name='M_hat', 
                                       shape=(input_shape[1], self.output_dim),
                                       initializer=self.kernel_initializer,
