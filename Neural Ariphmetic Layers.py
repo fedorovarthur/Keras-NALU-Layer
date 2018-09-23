@@ -3,7 +3,7 @@ from keras.engine.topology import Layer
 
 class NAC(Layer):
 
-    def __init__(self, output_dim, kernel_initializer, **kwargs):
+    def __init__(self, output_dim, kernel_initializer = 'glorot_normal', **kwargs):
         self.output_dim = output_dim
         self.kernel_initializer = kernel_initializer
         super(NAC, self).__init__(**kwargs)
