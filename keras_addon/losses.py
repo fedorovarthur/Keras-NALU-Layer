@@ -6,6 +6,7 @@ import keras.backend as K
 
 
 def relational_loss(y_true, y_pred, loss, alpha=.5, threshold=0):
+    assert K.shape(y_true) == K.shape(y_pred), 'Shapes are inconsistent'
 
     def _r(x):
         return K.relu(K.dot(x, x.T), threshold=threshold)
