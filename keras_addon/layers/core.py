@@ -3,7 +3,7 @@ import keras.backend as K
 from keras.engine.topology import Layer, InputSpec
 from keras import initializers, regularizers, constraints
 
-from ..activations import nac_, log_nac_
+from ..activations import nac, log_nac
 
 
 class NAC(Layer):
@@ -42,7 +42,7 @@ class NAC(Layer):
         self.built = True
 
     def call(self, inputs, **kwargs):
-        return nac_(inputs, self.M_hat, self.W_hat)
+        return nac(inputs, self.M_hat, self.W_hat)
 
     def compute_output_shape(self, input_shape):
         assert input_shape and len(input_shape) >= 2
@@ -96,7 +96,7 @@ class NALU(Layer):
                                      constraint=self.kernel_constraint)
         self.G = self.add_weight(shape=(input_dim, self.units),
                                  initializer=self.kernel_initializer,
-                                 name='_G',
+                                 name='G',
                                  regularizer=self.kernel_regularizer,
                                  constraint=self.kernel_constraint)
 
@@ -105,7 +105,7 @@ class NALU(Layer):
 
     def call(self, inputs, **kwargs):
         g = K.sigmoid(K.dot(inputs, self.G))
-        return g * nac_(inputs, self.W_hat, self.M_hat) + (1 - g) * log_nac_(inputs, self.W_hat, self.M_hat)
+        return g * nac(inputs, self.W_hat, self.M_hat) + (1 - g) * log_nac(inputs, self.W_hat, self.M_hat)
 
     def compute_output_shape(self, input_shape):
         assert input_shape and len(input_shape) >= 2

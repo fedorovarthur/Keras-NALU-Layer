@@ -21,9 +21,9 @@ def silu(x):
     return x * K.sigmoid(x)
 
 
-def nac_(x, w, m):
+def nac(x, w, m):
     return K.dot(x, K.tanh(w) * K.sigmoid(m))
 
 
-def log_nac_(x, w, m):
-    return K.exp(K.dot(K.log(K.abs(x) + K.epsilon()), nac_(x, w, m)))
+def log_nac(x, w, m):
+    return K.exp(K.dot(K.log(K.abs(x) + K.epsilon()), nac(x, w, m)))
