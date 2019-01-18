@@ -1,4 +1,4 @@
-# Keras Add-ons
+# Keras Add-on
 
 Simple Keras implementation of variety of newest layers, losses, activations, etc.
 
