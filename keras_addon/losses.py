@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from math import log
+
 import keras.backend as K
 
 
@@ -18,7 +20,7 @@ def vae_loss(y_true, y_pred, reconstruction_loss, mean, log_var):
     assert K.shape(y_true) == K.shape(y_pred), 'Shapes are inconsistent'
 
     shape = K.shape(y_true)
-    log_shape_sum = K.sum((K.log(shape[i]) for i in range(1, len(shape))))
+    log_shape_sum = sum((log(shape[i]) for i in range(1, len(shape))))
     reconstruction_log_loss = log_shape_sum + K.log(reconstruction_loss(y_true, y_pred))
     kl_loss = - 0.5 * K.sum(1 + log_var - K.square(mean) - K.exp(log_var), axis=-1)
     return K.mean(reconstruction_log_loss + kl_loss)

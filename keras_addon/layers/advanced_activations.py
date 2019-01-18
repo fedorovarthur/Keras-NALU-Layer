@@ -9,7 +9,7 @@ from .. import activations
 
 class GELU(Layer):
 
-    def __init__(self, approximation, **kwargs):
+    def __init__(self, approximation='tanh', **kwargs):
         super(GELU, self).__init__(**kwargs)
         self.supports_masking = True
         self.approximation = approximation
