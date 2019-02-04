@@ -1,6 +1,6 @@
 # Keras Add-on
 
-Simple Keras implementation of variety of the newest layers, losses, activations, etc.
+Keras implementation of variety of the newest layers, losses, activations, etc. from the recent research papers.
 
 By now there is the implementation of:
 1. Neural Arithmetic Logic Unit and Neural Accumulator, https://arxiv.org/pdf/1808.00508.pdf
