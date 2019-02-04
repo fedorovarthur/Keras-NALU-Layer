@@ -14,7 +14,6 @@ class GELU(Layer):
         self.supports_masking = True
         self.approximation = approximation
 
-    # TODO: add learnable mu and sigma besides approximations of N(0, 1) cdf
     def call(self, inputs, **kwargs):
         return activations.gelu(inputs, approximation=self.approximation)
 

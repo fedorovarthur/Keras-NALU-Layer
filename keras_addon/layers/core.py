@@ -7,7 +7,46 @@ import keras.backend as K
 from keras.engine.topology import Layer, InputSpec
 from keras import initializers, regularizers, constraints
 
-from ..activations import nac, log_nac
+from ..activations import nac, log_nac, gelu
+from .advanced_activations import GELU
+
+
+class LearnableGELU(GELU):
+
+    def __init__(self, approximation='tanh',
+                 kernel_initializer='glorot_uniform',
+                 kernel_regularizer=None,
+                 kernel_constraint=None,
+                 **kwargs):
+        if 'input_shape' not in kwargs and 'input_dim' in kwargs:
+            kwargs['input_shape'] = (kwargs.pop('input_dim'),)
+        super(LearnableGELU, self).__init__(**kwargs)
+        self.approximation = approximation
+        self.kernel_initializer = initializers.get(kernel_initializer)
+        self.kernel_regularizer = regularizers.get(kernel_regularizer)
+        self.kernel_constraint = constraints.get(kernel_constraint)
+        self.input_spec = InputSpec(min_ndim=2)
+        self.supports_masking = True
+
+    def build(self, input_shape):
+        assert len(input_shape) >= 2
+        input_dim = input_shape[-1]
+
+        self.mu = self.add_weight(shape=(input_dim,),
+                                  initializer=self.kernel_initializer,
+                                  name='mu',
+                                  regularizer = self.kernel_regularizer,
+                                  constraint = self.kernel_constraint)
+        self.sigma = self.add_weight(shape=(input_dim,),
+                                     initializer=self.kernel_initializer,
+                                     name='sigma',
+                                     regularizer=self.kernel_regularizer,
+                                     constraint=self.kernel_constraint)
+        self.input_spec = InputSpec(min_ndim=2, axes={-1: input_dim})
+        self.built = True
+
+    def call(self, inputs, **kwargs):
+        return self.mu + self.sigma * gelu(inputs, approximation=self.approximation)
 
 
 class NAC(Layer):

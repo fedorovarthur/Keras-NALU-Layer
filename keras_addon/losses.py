@@ -7,11 +7,11 @@ from math import log
 import keras.backend as K
 
 
-def relational_loss(y_true, y_pred, loss, alpha=.5, threshold=0):
+def relational_loss(y_true, y_pred, loss, alpha=.2, threshold=0):
     assert K.shape(y_true) == K.shape(y_pred), 'Shapes are inconsistent'
 
     def _r(x):
-        return K.relu(K.dot(x, x.T), threshold=threshold)
+        return K.relu(K.dot(x, K.transpose(x)), threshold=threshold)
 
     return (1 - alpha) * loss(y_true, y_pred) + alpha * loss(_r(y_true), _r(y_pred))
 
