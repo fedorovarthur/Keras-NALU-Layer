@@ -42,3 +42,20 @@ class SiLU(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
+
+class Swish(Layer):
+
+    def __init__(self, **kwargs):
+        super(Swish, self).__init__(**kwargs)
+        self.supports_masking = True
+
+    def call(self, inputs, beta=1, **kwargs):
+        return activations.swish(inputs, beta)
+
+    def get_config(self):
+        base_config = super(Swish, self).get_config()
+        return dict(list(base_config.items()))
+
+    def compute_output_shape(self, input_shape):
+        return input_shape

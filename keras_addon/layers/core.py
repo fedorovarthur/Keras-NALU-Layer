@@ -7,11 +7,11 @@ import keras.backend as K
 from keras.engine.topology import Layer, InputSpec
 from keras import initializers, regularizers, constraints
 
-from ..activations import nac, log_nac, gelu
-from .advanced_activations import GELU
+from ..activations import nac, log_nac, gelu, swish
+from .advanced_activations import GELU, Swish
 
 
-class LearnableGELU(GELU):
+class ParametricGELU(GELU):
 
     def __init__(self, approximation='tanh',
                  kernel_initializer='glorot_uniform',
@@ -20,7 +20,7 @@ class LearnableGELU(GELU):
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
-        super(LearnableGELU, self).__init__(**kwargs)
+        super(ParametricGELU, self).__init__(**kwargs)
         self.approximation = approximation
         self.kernel_initializer = initializers.get(kernel_initializer)
         self.kernel_regularizer = regularizers.get(kernel_regularizer)
@@ -30,7 +30,7 @@ class LearnableGELU(GELU):
 
     def build(self, input_shape):
         assert len(input_shape) >= 2
-        input_dim = input_shape[-1]
+        input_dim = input_shape[0]
 
         self.mu = self.add_weight(shape=(input_dim,),
                                   initializer=self.kernel_initializer,
@@ -47,6 +47,38 @@ class LearnableGELU(GELU):
 
     def call(self, inputs, **kwargs):
         return self.mu + self.sigma * gelu(inputs, approximation=self.approximation)
+
+
+class ParametricSwish(Swish):
+
+    def __init__(self,
+                 kernel_initializer='glorot_uniform',
+                 kernel_regularizer=None,
+                 kernel_constraint=None,
+                 **kwargs):
+        if 'input_shape' not in kwargs and 'input_dim' in kwargs:
+            kwargs['input_shape'] = (kwargs.pop('input_dim'),)
+        super(ParametricSwish, self).__init__(**kwargs)
+        self.kernel_initializer = initializers.get(kernel_initializer)
+        self.kernel_regularizer = regularizers.get(kernel_regularizer)
+        self.kernel_constraint = constraints.get(kernel_constraint)
+        self.input_spec = InputSpec(min_ndim=2)
+        self.supports_masking = True
+
+    def build(self, input_shape):
+        assert len(input_shape) >= 2
+        input_dim = input_shape[0]
+
+        self.beta = self.add_weight(shape=(input_dim,),
+                                  initializer=self.kernel_initializer,
+                                  name='beta',
+                                  regularizer = self.kernel_regularizer,
+                                  constraint = self.kernel_constraint)
+        self.input_spec = InputSpec(min_ndim=2, axes={-1: input_dim})
+        self.built = True
+
+    def call(self, inputs, **kwargs):
+        return swish(inputs, self.beta)
 
 
 class NAC(Layer):
