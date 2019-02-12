@@ -59,3 +59,20 @@ class Swish(Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape
+
+
+class LELU(Layer):
+
+    def __init__(self, **kwargs):
+        super(LELU, self).__init__(**kwargs)
+        self.supports_masking = True
+
+    def call(self, inputs, mu=0, s=1, **kwargs):
+        return activations.lelu(inputs, mu, s)
+
+    def get_config(self):
+        base_config = super(LELU, self).get_config()
+        return dict(list(base_config.items()))
+
+    def compute_output_shape(self, input_shape):
+        return input_shape

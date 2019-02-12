@@ -22,5 +22,5 @@ def vae_loss(y_true, y_pred, reconstruction_loss, mean, log_var):
     shape = K.shape(y_true)
     log_shape_sum = sum((log(shape[i]) for i in range(1, len(shape))))
     reconstruction_log_loss = log_shape_sum + K.log(reconstruction_loss(y_true, y_pred))
-    kl_loss = - 0.5 * K.sum(1 + log_var - K.square(mean) - K.exp(log_var), axis=-1)
+    kl_loss = - .5 * K.sum(1 + log_var - K.square(mean) - K.exp(log_var), axis=-1)
     return K.mean(reconstruction_log_loss + kl_loss)

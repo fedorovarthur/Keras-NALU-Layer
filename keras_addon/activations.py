@@ -21,8 +21,12 @@ def silu(x):
     return x * K.sigmoid(x)
 
 
-def swish(x, beta):
+def swish(x, beta=1):
     return x * K.sigmoid(beta * x)
+
+
+def lelu(x, mu=0, s=1):
+    return x * K.sigmoid((x - mu)/s)
 
 
 def nac(x, w, m):
